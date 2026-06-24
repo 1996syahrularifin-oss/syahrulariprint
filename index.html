@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYAHRUL ARIPRINT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0f172a;
+            padding: 14px;
+            min-height: 100vh;
+            font-size: 13px;
+        }
+
+.hamburger-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 3px 10px rgba(14, 165, 233, 0.25);
+    transition: all 0.3s;
+}
+
+.hamburger-btn:hover { transform: scale(1.08) rotate(5deg); }
+
+.sidebar {
+            position: fixed;
+            top: 0;
+            left: -340px;
+            width: 340px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 3px solid #0ea5e9;
+            box-shadow: 8px 0 32px rgba(0,0,0,0.15);
+            z-index: 1002;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+.sidebar.active { left: 0; }
+
+.sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+        }
+
+.sidebar-overlay.active { display: block; }
+
+.sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #bae6fd;
+        }
+
+.sidebar-title {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #0284c7;
+        }
+
+.close-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+.bluetooth-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+.bluetooth-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #075985;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+.btn-bluetooth {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+.printer-status {
+            margin-top: 10px;
+            padding: 6px;
+            background: #ffffff;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+.printer-status.connected {
+            background: #dcfce7;
+            color: #166534;
+            font-weight: 800;
+            border: 2px solid #22c55e;
+        }
+
+.container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 18px;
+            padding-top: 65px;
+            position: relative;
+        }
+
+.form-section {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px solid #bae6fd;
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.12);
+            position: relative;
+            margin-top: 0;
+        }
+
+        h1 {
+        font-size: 1.4rem;
+        margin-bottom: 3px;
+        margin-top: 0;
+        background: linear-gradient(135deg, #0ea5e9, #0284c7); -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 900;
+        padding-left: 0;
+}
+
+.subtitle {
+            color: #0369a1;
+            margin-bottom: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+.form-group { margin-bottom: 12px; }
+
+.form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #075985;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 9px 10px;
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 8px;
+            color: #0c4a6e;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #7dd3fc;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+.section-title {
+            font-size: 0.85rem;
+            font-weight: 900;
+            margin: 20px 0 12px 0;
+            color: #075985;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+.section-title::before {
+            content: '';
+            width: 3px;
+            height: 18px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border-radius: 2px;
+        }
+
+.item-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+.item-card:hover {
+            border-color: #0ea5e9;
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.2);
+            transform: translateY(-2px);
+        }
+
+.item-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+.item-number {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 10px rgba(14, 165, 233, 0.3);
+        }
+
+.item-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+.btn {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+.btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(14, 165, 233, 0.5); }
+
+.btn-secondary {
+            background: #ffffff;
+            color: #0284c7;
+            border: 2px solid #0ea5e9;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+.btn-danger {
+            background: #ef4444;
+            color: white;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+.btn-add {
+            background: #ffffff;
+            color: #0284c7;
+            border: 2px dashed #0ea5e9;
+            padding: 11px 14px;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            width: 100%;
+        }
+
+.btn-add:hover {
+            background: #f0f9ff;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+
+.btn-del {
+            background: #ef4444;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+.total-summary {
+            background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #0284c7 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 18px;
+            box-shadow: 0 12px 32px rgba(14, 165, 233, 0.4);
+            border: 2px solid #0ea5e9;
+        }
+
+.total-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+.total-summary-row.grand {
+            font-size: 1.6rem;
+            font-weight: 900;
+            padding-top: 14px;
+            border-top: 2px solid rgba(255,255,0.4);
+            margin-top: 14px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+.struk-wrapper {
+            position: sticky;
+            top: 20px;
+        }
+
+.struk-preview {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+            color: #0c4a6e;
+            padding: 18px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            line-height: 1.5;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #0ea5e9;
+            box-shadow: 0 12px 40px rgba(14, 165, 233, 0.25);
+        }
+
+.struk-preview::before {
+            content: 'SYAHRUL ARIPRINT';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 45px;
+            font-weight: 900;
+            color: #0ea5e9;
+            opacity: 0.05;
+            z-index: 0;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+.struk-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7, #0ea5e9);
+            z-index: 2;
+        }
+
+.struk-preview * { position: relative; z-index: 1; }
+
+.struk-header {
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #0ea5e9;
+       }
+
+.struk-preview h2 {
+            font-size: 14px;
+            margin-bottom: 3px;
+            font-weight: 900;
+            color: #0284c7;
+            letter-spacing: 0.5px;
+       }
+
+.struk-preview.center { text-align: center; }
+.struk-preview.line {
+            border-top: 2px dashed #bae6fd;
+            margin: 8px 0;
+       }
+.struk-preview.row {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+       }
+.struk-preview.bold { font-weight: 800; }
+.struk-preview.small { font-size: 7px; color: #0369a1; }
+
+.struk-total-section {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+       }
+
+.struk-total-section.row {
+            font-weight: 900;
+            font-size: 11px;
+       }
+
+.struk-footer {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px dashed #bae6fd;
+       }
+
+        @media (max-width: 968px) {
+.container { grid-template-columns: 1fr; padding-top: 65px; }
+.struk-wrapper { position: relative; top: 0; }
+.sidebar { width: 300px; left: -300px; }
+.item-grid { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+.struk-preview,.struk-preview * { visibility: visible; }
+.struk-preview {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm;
+                padding: 8px;
+                border-radius: 0;
+                border: 1px solid #000;
+                box-shadow: none;
+                background: white;
+            }
+.struk-preview::before { opacity: 0.03; }
+.struk-preview::after { display: none; }
+.struk-total-section {
+                background: #f0f0f0;
+                color: #000;
+                border: 1px solid #000;
+           }
+.no-print { display: none!important; }
+        }
+    </style>
+    <!-- PWA Meta Tags -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0284c7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ARIPRINT">
+<link rel="apple-touch-icon" href="./icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <button class="hamburger-btn no-print" onclick="toggleSidebar()">☰</button>
+
+        <div class="sidebar-overlay no-print" id="overlay" onclick="closeSidebar()"></div>
+
+        <div class="sidebar no-print" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">📋 Info Usaha</div>
+                <button class="close-btn" onclick="closeSidebar()">✕</button>
+            </div>
+
+            <div class="bluetooth-section">
+                <div class="bluetooth-title">🔵 Printer: SAPRINT</div>
+                <button class="btn-bluetooth" onclick="cariBluetooth()">Cari & Konek Printer</button>
+                <div class="printer-status" id="printerStatus">Belum terhubung</div>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Usaha</label>
+                <input type="text" id="namaToko" placeholder="" oninput="updateStruk()">
+            </div>
+
+            <div class="form-group">
+                <label>No. HP / WhatsApp</label>
+                <input type="text" id="hpToko" placeholder="" oninput="updateStruk()">
+            </div>
+
+            <div class="form-group">
+                <label>Alamat Lengkap</label>
+                <textarea id="alamatToko" rows="3" placeholder="" oninput="updateStruk()"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Kasir</label>
+                <input type="text" id="kasir" placeholder="" oninput="updateStruk()">
+            </div>
+
+            <div class="form-group">
+                <label>No. Struk</label>
+                <input type="text" id="noStruk" readonly>
+            </div>
+
+            <button class="btn btn-danger" onclick="hapusSemuaData()">🗑️ Hapus Semua Data</button>
+        </div>
+
+        <div class="form-section no-print">
+            <h1>SYAHRUL ARIPRINT</h1>
+            <p class="subtitle">CATAT SEMUA TRANSAKSI & PRINT</p>
+
+            <div class="section-title">Detail Item</div>
+            <div id="itemList"></div>
+            <button class="btn btn-add" onclick="tambahItem()">+ Tambah Item Baru</button>
+
+            <div class="section-title">Pembayaran</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Diskon (%)</label>
+                    <input type="number" id="diskon" placeholder="0" min="0" max="100" step="0.1" inputmode="decimal" oninput="updateStruk()">
+                </div>
+                <div class="form-group">
+                    <label>Bayar (Rp)</label>
+                    <input type="text" id="bayar" placeholder="0" inputmode="numeric" oninput="updateStruk()">
+                </div>
+            </div>
+
+            <div class="total-summary" id="totalSummary"></div>
+
+            <button class="btn btn-primary" onclick="cetakBluetooth()">🖨️ PRINT BLUETOOTH</button>
+            <button class="btn btn-secondary" onclick="exportPDF()">📄 DOWNLOAD PDF</button>
+        </div>
+
+        <div class="struk-wrapper">
+            <div class="struk-preview" id="struk"></div>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        let items = [{ nama: '', qty: '', harga: '' }];
+        let printerDevice = null;
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        async function cariBluetooth() {
+            try {
+                document.getElementById('printerStatus').textContent = 'Mencari SAPRINT...';
+                printerDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: 'SAPRINT' }, { services: ['000018f0-0000-1000-8000-00805f9b34fb'] }],
+                    optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+                });
+
+                document.getElementById('printerStatus').textContent = `✓ Terhubung: ${printerDevice.name}`;
+                document.getElementById('printerStatus').classList.add('connected');
+
+                printerDevice.addEventListener('gattserverdisconnected', () => {
+                    document.getElementById('printerStatus').textContent = 'Printer terputus';
+                    document.getElementById('printerStatus').classList.remove('connected');
+                });
+
+            } catch (error) {
+                document.getElementById('printerStatus').textContent = 'Gagal: ' + error.message;
+            }
+        }
+
+        async function cetakBluetooth() {
+            if (!printerDevice) {
+                alert('Hubungkan printer SAPRINT dulu di menu ☰');
+                toggleSidebar();
+                return;
+            }
+
+            try {
+                const server = await printerDevice.gatt.connect();
+                const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
+                const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+
+                const strukText = generateStrukText();
+                const encoder = new TextEncoder();
+                const data = encoder.encode(strukText + '\n\n\n');
+
+                await characteristic.writeValue(data);
+                alert('✅ Struk berhasil dicetak ke SAPRINT!');
+
+            } catch (error) {
+                alert('❌ Gagal cetak: ' + error.message);
+            }
+        }
+
+        function generateStrukText() {
+            const namaToko = document.getElementById('namaToko').value || 'SYAHRUL ARIPRINT';
+            const alamat = document.getElementById('alamatToko').value || '';
+            const hp = document.getElementById('hpToko').value || '';
+            const kasir = document.getElementById('kasir').value || 'Kasir';
+            const noStruk = document.getElementById('noStruk').value;
+            const { diskon, bayar, total, kembalian } = hitungTotal();
+
+            const now = new Date();
+            const tanggal = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            let text = `${namaToko}\n${alamat}\n${hp}\n`;
+            text += `--------------------------------\n`;
+            text += `No: ${noStruk}\n${tanggal} ${jam} ${kasir}\n`;
+            text += `--------------------------------\n`;
+
+            items.forEach(item => {
+                const qty = parseFloat(item.qty) || 0;
+                const harga = parseFloat(item.harga) || 0;
+                if (item.nama && qty > 0) {
+                    const totalItem = qty * harga;
+                    text += `${item.nama}\n`;
+                    text += `${qty} x ${harga.toLocaleString('id-ID')} ${totalItem.toLocaleString('id-ID')}\n`;
+                }
+            });
+
+            text += `--------------------------------\n`;
+            if (diskon > 0) text += `Diskon: -${diskon.toLocaleString('id-ID')}\n`;
+            text += `TOTAL: ${total.toLocaleString('id-ID')}\n`;
+            text += `--------------------------------\n`;
+            text += `Bayar: ${bayar.toLocaleString('id-ID')}\n`;
+            text += `Kembali: ${(kembalian > 0? kembalian : 0).toLocaleString('id-ID')}\n`;
+            text += `--------------------------------\n`;
+            text += `TERIMA KASIH\n`;
+
+            return text;
+        }
+
+        function hapusSemuaData() {
+            if (confirm('Yakin hapus semua data transaksi?')) {
+                items = [{ nama: '', qty: '', harga: '' }];
+                document.getElementById('diskon').value = '';
+                document.getElementById('bayar').value = '';
+                renderItems();
+                updateStruk();
+            }
+        }
+
+        function formatInputRupiah(angka) {
+            let number_string = angka.replace(/[^,\d]/g, '').toString();
+            let split = number_string.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1]!= undefined? rupiah + ',' + split[1] : rupiah;
+            return rupiah;
+        }
+
+        function unformatRupiah(rupiah) {
+            return parseInt(rupiah.replace(/[^0-9]/g, '')) || 0;
+        }
+
+        function formatRupiah(num) {
+            return 'Rp ' + num.toLocaleString('id-ID');
+        }
+
+        function generateNoStruk() {
+            const now = new Date();
+            const tgl = now.getDate().toString().padStart(2, '0');
+            const bln = (now.getMonth() + 1).toString().padStart(2, '0');
+            const thn = now.getFullYear().toString().slice(-2);
+            const jam = now.getHours().toString().padStart(2, '0');
+            const mnt = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('noStruk').value = `INV${thn}${bln}${tgl}${jam}${mnt}`;
+        }
+
+        function tambahItem() {
+            items.push({ nama: '', qty: '', harga: '' });
+            renderItems();
+        }
+
+        function hapusItem(index) {
+            items.splice(index, 1);
+            if (items.length === 0) items.push({ nama: '', qty: '', harga: '' });
+            renderItems();
+        }
+
+        function updateItem(index, field, value) {
+            if (field === 'harga') {
+                items[index][field] = unformatRupiah(value);
+                document.getElementById(`harga-${index}`).value = value? formatInputRupiah(value) : '';
+            } else if (field === 'nama') {
+                items[index][field] = value;
+            } else {
+                items[index][field] = parseFloat(value) || '';
+            }
+            updateStruk();
+        }
+
+        function renderItems() {
+            const list = document.getElementById('itemList');
+            list.innerHTML = items.map((item, i) => {
+                return `
+                    <div class="item-card">
+                        <div class="item-card-header">
+                            <div class="item-number">${i + 1}</div>
+                            <button type="button" class="btn-del" onclick="hapusItem(${i})">Hapus</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nama Barang</label>
+                            <input type="text" placeholder="" value="${item.nama}" oninput="updateItem(${i}, 'nama', this.value)">
+                        </div>
+
+                        <div class="item-grid">
+                            <div class="form-group">
+                                <label>Jumlah</label>
+                                <input type="number" step="0.1" placeholder="" value="${item.qty}" inputmode="decimal" oninput="updateItem(${i}, 'qty', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Harga Rp.</label>
+                                <input type="text" id="harga-${i}" placeholder="" value="${item.harga? formatInputRupiah(item.harga.toString()) : ''}" inputmode="numeric" oninput="updateItem(${i}, 'harga', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            updateStruk();
+        }
+
+        function hitungTotal() {
+            let subtotal = 0;
+            let totalItem = 0;
+
+            items.forEach(item => {
+                const qty = parseFloat(item.qty) || 0;
+                const harga = parseFloat(item.harga) || 0;
+                if (item.nama && qty > 0) {
+                    subtotal += qty * harga;
+                    totalItem++;
+                }
+            });
+
+            const diskonPersen = parseFloat(document.getElementById('diskon').value) || 0;
+            const diskon = subtotal * (diskonPersen / 100);
+            const bayar = unformatRupiah(document.getElementById('bayar').value) || 0;
+            const total = subtotal - diskon;
+            const kembalian = bayar - total;
+
+            return { subtotal, totalItem, diskon, bayar, total, kembalian, diskonPersen };
+        }
+
+        function updateStruk() {
+            const namaToko = document.getElementById('namaToko').value || 'SYAHRUL ARIPRINT';
+            const alamat = document.getElementById('alamatToko').value || 'Alamat Usaha';
+            const hp = document.getElementById('hpToko').value || '08xx-xxxx';
+            const kasir = document.getElementById('kasir').value || 'Kasir';
+            const noStruk = document.getElementById('noStruk').value;
+
+            document.getElementById('bayar').value = unformatRupiah(document.getElementById('bayar').value) > 0? formatInputRupiah(unformatRupiah(document.getElementById('bayar').value).toString()) : '';
+
+            const now = new Date();
+            const tanggal = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            let itemHTML = '';
+            items.forEach(item => {
+                const qty = parseFloat(item.qty) || 0;
+                const harga = parseFloat(item.harga) || 0;
+                if (item.nama && qty > 0) {
+                    const total = qty * harga;
+                    itemHTML += `
+                        <div>${item.nama}</div>
+                        <div class="row small">
+                            <span>${qty} x ${harga.toLocaleString('id-ID')}</span>
+                            <span>${total.toLocaleString('id-ID')}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            const { subtotal, totalItem, diskon, bayar, total, kembalian, diskonPersen } = hitungTotal();
+
+            document.getElementById('totalSummary').innerHTML = `
+                <div class="total-summary-row">
+                    <span>Total Item:</span>
+                    <span>${totalItem} jenis</span>
+                </div>
+                ${diskon > 0? `<div class="total-summary-row"><span>Diskon (${diskonPersen}%):</span><span>-${formatRupiah(diskon)}</span></div>` : ''}
+                <div class="total-summary-row grand">
+                    <span>TOTAL:</span>
+                    <span>${formatRupiah(total)}</span>
+                </div>
+            `;
+
+            document.getElementById('struk').innerHTML = `
+                <div class="struk-header">
+                    <h2>${namaToko}</h2>
+                    <div class="center small">${alamat}</div>
+                    <div class="center small">${hp}</div>
+                </div>
+                <div class="line"></div>
+                <div class="row small"><span>No: ${noStruk}</span></div>
+                <div class="row small"><span>${tanggal} ${jam}</span><span>${kasir}</span></div>
+                <div class="line"></div>
+                ${itemHTML || '<div class="center small">Belum ada item</div>'}
+                <div class="line"></div>
+                ${diskon > 0? `<div class="row"><span>Diskon ${diskonPersen}%</span><span>-${diskon.toLocaleString('id-ID')}</span></div>` : ''}
+                <div class="struk-total-section">
+                    <div class="row"><span>TOTAL</span><span>${total.toLocaleString('id-ID')}</span></div>
+                </div>
+                <div class="row"><span>Bayar</span><span>${bayar.toLocaleString('id-ID')}</span></div>
+                <div class="row"><span>Kembali</span><span>${(kembalian > 0? kembalian : 0).toLocaleString('id-ID')}</span></div>
+                <div class="struk-footer">
+                    <div class="center bold">TERIMA KASIH</div>
+                    <div class="center small">Powered by SYAHRUL ARIPRINT</div>
+                </div>
+            `;
+        }
+
+        function exportPDF() {
+            const doc = new jsPDF({ format: 'a4' });
+            const namaToko = document.getElementById('namaToko').value || 'SYAHRUL ARIPRINT';
+            const alamat = document.getElementById('alamatToko').value || 'Alamat Usaha';
+            const hp = document.getElementById('hpToko').value || '08xx-xxxx';
+            const kasir = document.getElementById('kasir').value || 'Kasir';
+            const noStruk = document.getElementById('noStruk').value;
+            const { diskon, bayar, total, kembalian, diskonPersen } = hitungTotal();
+
+            const now = new Date();
+            const tanggal = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            let y = 20;
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text(namaToko, 105, y, { align: 'center' });
+
+            y += 7;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(alamat, 105, y, { align: 'center' });
+            y += 5;
+            doc.text(hp, 105, y, { align: 'center' });
+
+            y += 8;
+            doc.line(20, y, 190, y);
+
+            y += 7;
+            doc.text(`No. Struk: ${noStruk}`, 20, y);
+            y += 5;
+            doc.text(`Tanggal: ${tanggal} ${jam}`, 20, y);
+            doc.text(`Kasir: ${kasir}`, 190, y, { align: 'right' });
+
+            y += 8;
+            doc.line(20, y, 190, y);
+
+            y += 7;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Item', 20, y);
+            doc.text('Qty', 120, y);
+            doc.text('Harga', 145, y);
+            doc.text('Total', 190, y, { align: 'right' });
+
+            y += 2;
+            doc.line(20, y, 190, y);
+
+                        doc.setFont('helvetica', 'normal');
+            items.forEach(item => {
+                const qty = parseFloat(item.qty) || 0;
+                const harga = parseFloat(item.harga) || 0;
+                if (item.nama && qty > 0) {
+                    const totalItem = qty * harga;
+                    y += 7;
+                    doc.text(item.nama, 20, y);
+                    doc.text(qty.toString(), 120, y);
+                    doc.text(harga.toLocaleString('id-ID'), 145, y);
+                    doc.text(totalItem.toLocaleString('id-ID'), 190, y, { align: 'right' });
+                }
+            });
+            
+            y += 5;
+            doc.line(20, y, 190, y);
+            
+            if (diskon > 0) {
+                y += 7;
+                doc.text(`Diskon ${diskonPersen}%:`, 145, y);
+                doc.text(`-${diskon.toLocaleString('id-ID')}`, 190, y, { align: 'right' });
+            }
+            
+            y += 7;
+            doc.setFont('helvetica', 'bold');
+            doc.text('TOTAL:', 145, y);
+            doc.text(total.toLocaleString('id-ID'), 190, y, { align: 'right' });
+            
+            y += 7;
+            doc.setFont('helvetica', 'normal');
+            doc.text('Bayar:', 145, y);
+            doc.text(bayar.toLocaleString('id-ID'), 190, y, { align: 'right' });
+            y += 5;
+            doc.text('Kembali:', 145, y);
+            doc.text((kembalian > 0 ? kembalian : 0).toLocaleString('id-ID'), 190, y, { align: 'right' });
+            
+            y += 15;
+            doc.setFontSize(9);
+            doc.text('Terima kasih atas kunjungan Anda', 105, y, { align: 'center' });
+            y += 5;
+            doc.text('Powered by SYAHRUL ARIPRINT', 105, y, { align: 'center' });
+            
+            doc.setGState(new doc.GState({ opacity: 0.05 }));
+            doc.setFontSize(60);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(14, 165, 233);
+            doc.text('SYAHRUL ARIPRINT', 105, 150, { align: 'center', angle: -45 });
+            
+            doc.save(`Struk-${noStruk}.pdf`);
+            }
+            
+            // Init
+            generateNoStruk();
+            renderItems();
+            setInterval(generateNoStruk, 60000);
+            </script>
+            <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW failed', err));
+        });
+    }
+    
+    // Auto Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Langsung munculin popup install setelah 3 detik
+        setTimeout(() => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted install');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }, 3000);
+    });
+</script>
+            </body>
+            </html>
