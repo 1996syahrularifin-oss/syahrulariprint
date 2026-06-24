@@ -1,12 +1,14 @@
 {
   "name": "SYAHRUL ARIPRINT",
   "short_name": "ARIPRINT",
-  "description": "Aplikasi Kasir & Cetak Struk SYAHRUL ARIPRINT",
+  "description": "Aplikasi kasir online untuk cetak struk thermal Bluetooth, export PDF, dan kelola transaksi usaha SYAHRUL ARIPRINT. Support offline.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#e0f2fe",
   "theme_color": "#0284c7",
   "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "id",
   "icons": [
     {
       "src": "icon-192.png",
@@ -21,5 +23,13 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "productivity", "utilities"]
+  "categories": ["business", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
 }
